@@ -21,17 +21,17 @@ import "erc721/erc721.sol";
 
 contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
 
-    string                                         private _name;
-    string                                         private _symbol;
+    string                                         internal _name;
+    string                                         internal _symbol;
 
-    mapping (uint256 => string)                    private _uris;
+    mapping (uint256 => string)                    internal _uris;
 
-    mapping (bytes4 => bool)                       private _interfaces;
+    mapping (bytes4 => bool)                       internal _interfaces;
 
-    uint256[]                                      private _allDeeds;
-    mapping (address => uint256[])                 private _usrDeeds;
-    mapping (uint256 => Deed)                      private _deeds;
-    mapping (address => mapping (address => bool)) private _operators;
+    uint256[]                                      internal _allDeeds;
+    mapping (address => uint256[])                 internal _usrDeeds;
+    mapping (uint256 => Deed)                      internal _deeds;
+    mapping (address => mapping (address => bool)) internal _operators;
 
     struct Deed {
         uint256      pos;

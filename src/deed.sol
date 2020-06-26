@@ -11,11 +11,24 @@ contract DSDeed is DSDeedBase, DSStop {
     event Mint(address indexed guy, uint256 nft);
     event Burn(address indexed guy, uint256 nft);
 
-    function mint() public {
-        // TODO
+    uint256 private _ids;
+
+    function mint(address guy) public auth stoppable returns (uint256 nft) {
+        nft = _ids++;
+        _allDeeds.push(nft);
+        _upush(guy, nft);
+        _deeds[_ids] = Deed(
+            _allDeeds[_allDeeds.length - 1],
+            _usrDeeds[guy].length - 1,
+            guy,
+            address(0)
+        );
+        emit Mint(guy, _ids);
     }
 
-    function burn() public {
+    function burn(address guy, uint256 nft) public auth stoppable {
         // TODO
+
+        emit Burn(guy, nft);
     }
 }

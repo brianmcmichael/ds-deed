@@ -2,7 +2,7 @@ pragma solidity ^0.5.15;
 
 import "ds-test/test.sol";
 
-import "./DsDeed.sol";
+import "./deed.sol";
 
 contract DsDeedTest is DSTest {
     DsDeed deed;

@@ -58,15 +58,15 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         _;
     }
 
-    function name() public view returns (string) {
+    function name() public view returns (string memory) {
         return _name;
     }
 
-    function symbol() public view returns (string) {
+    function symbol() public view returns (string memory) {
         return _symbol;
     }
 
-    function tokenURI(uint256 nft) external view returns (string) {
+    function tokenURI(uint256 nft) external view returns (string memory) {
         return _uris[nft];
     }
 

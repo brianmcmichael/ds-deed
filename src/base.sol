@@ -88,7 +88,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
 
     function _isContract(address addr) private view returns (bool) {
         bytes32 codehash;
-        bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470; //EIP-1052
+        bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470; // EIP-1052
         assembly { codehash := extcodehash(addr) }
         return (codehash != accountHash && codehash != 0x0);
     }
@@ -142,6 +142,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         _deeds[nft].upos = _uidx;
         _udds.pop();
         _usrDeeds[_deeds[nft].guy] = _udds;
+        approve(address(0), nft);
     }
 
     function _upush(address guy, uint256 nft) internal {

@@ -4,11 +4,11 @@ import "ds-test/test.sol";
 
 import "./deed.sol";
 
-contract DsDeedTest is DSTest {
-    DsDeed deed;
+contract DSDeedTest is DSTest {
+    DSDeed deed;
 
     function setUp() public {
-        deed = new DsDeed();
+        deed = new DSDeed("TestToken", "TEST");
     }
 
     function testFail_basic_sanity() public {

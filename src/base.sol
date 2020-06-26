@@ -102,10 +102,12 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function balanceOf(address guy) public view returns (uint256) {
+        require(guy != address(0), "ds-deed-invalid-address");
         return _usrDeeds[guy].length;
     }
 
     function ownerOf(uint256 nft) public view returns (address) {
+        require(_deeds[nft].guy != address(0), "ds-deed-invalid-nft");
         return _deeds[nft].guy;
     }
 

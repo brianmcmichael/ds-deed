@@ -35,10 +35,6 @@ contract DSDeed is DSDeedBase, DSStop {
         emit Mint(guy, _ids);
     }
 
-    function setTokenUri(uint256 nft, string memory uri) public auth stoppable {
-        _uris[nft] = uri;
-    }
-
     function burn(uint256 nft) public auth stoppable {
         address guy = _deeds[nft].guy;
         _upop(nft);
@@ -48,5 +44,9 @@ contract DSDeed is DSDeedBase, DSStop {
         _deeds[nft].pos = _idx;
         _allDeeds.pop();
         emit Burn(guy, nft);
+    }
+
+    function setTokenUri(uint256 nft, string memory uri) public auth stoppable {
+        _uris[nft] = uri;
     }
 }

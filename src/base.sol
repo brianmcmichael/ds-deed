@@ -79,14 +79,14 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function tokenOfOwnerByIndex(address guy, uint256 idx) public view returns (uint256) {
-        return _usrDeeds[address][idx];
+        return _usrDeeds[guy][idx];
     }
 
-    function onERC721Received(address op, address src, uint256 nft, bytes calldata what) external returns(bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external returns(bytes4) {
         return this.onERC721Received.selector;
     }
 
-    function _isContract(address addr) private returns (bool) {
+    function _isContract(address addr) private view returns (bool) {
         bytes32 codehash;
         bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470; //EIP-1052
         assembly { codehash := extcodehash(addr) }
@@ -109,15 +109,15 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         return _deeds[nft].guy;
     }
 
-    function safeTransferFrom(address src, address dst, uint256 nft, bytes what) public payable {
-        _safeTransfer(src, dst, nft, data);
+    function safeTransferFrom(address src, address dst, uint256 nft, bytes memory what) public payable {
+        _safeTransfer(src, dst, nft, what);
     }
 
     function safeTransferFrom(address src, address dst, uint256 nft) public payable {
         _safeTransfer(src, dst, nft, "");
     }
 
-    function _safeTransfer(address src, address dst, uint256 nft, bytes calldata data) internal {
+    function _safeTransfer(address src, address dst, uint256 nft, bytes memory data) internal {
         transferFrom(src, dst, nft);
         if (_isContract(dst)) {
             bytes4 res = ERC721TokenReceiver(dst).onERC721Received(msg.sender, src, nft, data);
@@ -135,7 +135,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function _upop(uint256 nft) internal {
-        uint256[] _udds = _usrDeeds[_deeds[nft].guy];
+        uint256[] storage _udds = _usrDeeds[_deeds[nft].guy];
         uint256   _uidx = _deeds[nft].upos;
         uint256   _move = _udds[_udds.length - 1];
         _udds[_uidx] = _move;
@@ -145,13 +145,13 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function _upush(address guy, uint256 nft) internal {
-        _deeds[nft].upos = _usrDeeds[nft].length;
+        _deeds[nft].upos = _usrDeeds[guy].length;
         _usrDeeds[guy].push(nft);
         _deeds[nft].guy = guy;
     }
 
     function approve(address guy, uint256 nft) public payable mine(nft) returns (address) {
-        _deeds[nft].approval = guy;
+        _deeds[nft].approved = guy;
         emit Approval(msg.sender, guy, nft);
     }
 
@@ -165,6 +165,6 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function isApprovedForAll(address guy, address op) public view returns (bool) {
-        return (_operators[guy] == op);
+        return _operators[guy][op];
     }
 }

@@ -82,7 +82,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         return _usrDeeds[address][idx];
     }
 
-    function onERC721Received(address op, address src, uint256 nft, bytes what) external returns(bytes4) {
+    function onERC721Received(address op, address src, uint256 nft, bytes calldata what) external returns(bytes4) {
         return this.onERC721Received.selector;
     }
 
@@ -117,7 +117,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         _safeTransfer(src, dst, nft, "");
     }
 
-    function _safeTransfer(address src, address dst, uint256 nft, bytes data) internal {
+    function _safeTransfer(address src, address dst, uint256 nft, bytes calldata data) internal {
         transferFrom(src, dst, nft);
         if (_isContract(dst)) {
             bytes4 res = ERC721TokenReceiver(dst).onERC721Received(msg.sender, src, nft, data);

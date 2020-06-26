@@ -1,4 +1,4 @@
-pragma solidity ^0.5.15;
+pragma solidity >0.4.20;
 
 import "./base.sol";
 

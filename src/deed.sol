@@ -32,7 +32,7 @@ contract DSDeed is DSDeedBase, DSStop {
             address(0)
         );
         _uris[nft] = uri;
-        ids++;
+        _ids++;
         emit Mint(guy, nft);
     }
 

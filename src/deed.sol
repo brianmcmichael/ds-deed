@@ -22,7 +22,7 @@ contract DSDeed is DSDeedBase, DSStop {
     }
 
     function mint(address guy, string memory uri) public auth stoppable returns (uint256 nft) {
-        nft = _ids;
+        nft = _ids++;
         _allDeeds.push(nft);
         _upush(guy, nft);
         _deeds[nft] = Deed(
@@ -32,7 +32,6 @@ contract DSDeed is DSDeedBase, DSStop {
             address(0)
         );
         _uris[nft] = uri;
-        _ids++;
         emit Mint(guy, nft);
     }
 

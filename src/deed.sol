@@ -13,12 +13,12 @@ contract DSDeed is DSDeedBase, DSStop {
 
     uint256 private _ids;
 
-    function mint(string memory uri) public {
-        mint(msg.sender, uri);
+    function mint(string memory uri) public returns (uint256) {
+        return mint(msg.sender, uri);
     }
 
-    function mint(address guy) public {
-        mint(guy, "");
+    function mint(address guy) public returns (uint256) {
+        return mint(guy, "");
     }
 
     function mint(address guy, string memory uri) public auth stoppable returns (uint256 nft) {

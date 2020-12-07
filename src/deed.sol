@@ -14,15 +14,8 @@ contract DSDeed is DSDeedBase, DSAuth, DSStop {
 
     uint256 private _ids;
 
-    function mint(string memory uri) public auth returns (uint256) {
-        return mint(msg.sender, uri);
-    }
-
-    function mint(address guy) public auth returns (uint256) {
-        return mint(guy, "");
-    }
-
     function mint(address guy, string memory uri) public auth stoppable returns (uint256 nft) {
+        require(guy != address(0), "ds-deed-invalid-address");
         nft = _ids++;
         _allDeeds.push(nft);
         _upush(guy, nft);

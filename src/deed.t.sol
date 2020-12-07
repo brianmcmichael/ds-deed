@@ -7,10 +7,11 @@ import "./deed.sol";
 contract DSDeedTest is DSTest {
     DSDeed deed;
 
-    string  _name = "TestToken";
-    string  _symb = "TEST";
-    address _addr = 0x00000000219ab540356cBB839Cbe05303d7705Fa;
-    string  _uri  = "https://etherscan.io/address/0x00000000219ab540356cBB839Cbe05303d7705Fa";
+    string  _name  = "TestToken";
+    string  _symb  = "TEST";
+    address _addr  = 0x00000000219ab540356cBB839Cbe05303d7705Fa;
+    address _addr2 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    string  _uri   = "https://etherscan.io/address/0x00000000219ab540356cBB839Cbe05303d7705Fa";
 
     function setUp() public {
         deed = new DSDeed(_name, _symb);
@@ -99,7 +100,7 @@ contract DSDeedTest is DSTest {
 
         assertEq(deed.totalSupply(), 2);
         deed.mint(_addr, "t3");
-        deed.mint(_addr, "t4");
+        deed.mint(_addr2, "t4");
         assertEq(deed.totalSupply(), 4);
         deed.burn(0);
         assertEq(deed.totalSupply(), 3);
@@ -107,8 +108,14 @@ contract DSDeedTest is DSTest {
         assertEq(deed.totalSupply(), 2);
         deed.burn(2);
         assertEq(deed.totalSupply(), 1);
+        deed.mint(_addr, "t5");
+        assertEq(deed.totalSupply(), 2);
+        assertEq(deed.balanceOf(_addr), 1);
+        assertEq(deed.balanceOf(_addr2), 1);
         deed.burn(3);
-        assertEq(deed.totalSupply(), 0);
+        assertEq(deed.totalSupply(), 1);
+        assertEq(deed.balanceOf(_addr), 1);
+        assertEq(deed.balanceOf(_addr2), 0);
     }
 
     //function tokenByIndex(uint256 idx) external view returns (uint256);

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity >=0.5.0;
+pragma solidity >=0.6.0;
 
 import "erc721/erc721.sol";
 
@@ -48,7 +48,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         _addInterface(0x780e9d63); // ERC721Enumerable
     }
 
-    modifier mine(uint256 nft) {
+    modifier nod(uint256 nft) {
         require(
             _deeds[nft].guy == msg.sender ||
             _deeds[nft].approved == msg.sender ||
@@ -58,31 +58,31 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         _;
     }
 
-    function name() public view returns (string memory) {
+    function name() external override view returns (string memory) {
         return _name;
     }
 
-    function symbol() public view returns (string memory) {
+    function symbol() external override view returns (string memory) {
         return _symbol;
     }
 
-    function tokenURI(uint256 nft) external view returns (string memory) {
+    function tokenURI(uint256 nft) external override view returns (string memory) {
         return _uris[nft];
     }
 
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() external override view returns (uint256) {
         return _allDeeds.length;
     }
 
-    function tokenByIndex(uint256 idx) public view returns (uint256) {
+    function tokenByIndex(uint256 idx) external override view returns (uint256) {
         return _allDeeds[idx];
     }
 
-    function tokenOfOwnerByIndex(address guy, uint256 idx) public view returns (uint256) {
+    function tokenOfOwnerByIndex(address guy, uint256 idx) external override view returns (uint256) {
         return _usrDeeds[guy][idx];
     }
 
-    function onERC721Received(address, address, uint256, bytes calldata) external returns(bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external override returns(bytes4) {
         return this.onERC721Received.selector;
     }
 
@@ -93,7 +93,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         return (codehash != accountHash && codehash != 0x0);
     }
 
-    function supportsInterface(bytes4 interfaceID) external view returns (bool) {
+    function supportsInterface(bytes4 interfaceID) external override view returns (bool) {
         return _interfaces[interfaceID];
     }
 
@@ -101,21 +101,21 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         _interfaces[interfaceID] = true;
     }
 
-    function balanceOf(address guy) public view returns (uint256) {
+    function balanceOf(address guy) external override view returns (uint256) {
         require(guy != address(0), "ds-deed-invalid-address");
         return _usrDeeds[guy].length;
     }
 
-    function ownerOf(uint256 nft) public view returns (address) {
+    function ownerOf(uint256 nft) external override view returns (address) {
         require(_deeds[nft].guy != address(0), "ds-deed-invalid-nft");
         return _deeds[nft].guy;
     }
 
-    function safeTransferFrom(address src, address dst, uint256 nft, bytes memory what) public payable {
+    function safeTransferFrom(address src, address dst, uint256 nft, bytes calldata what) external override payable {
         _safeTransfer(src, dst, nft, what);
     }
 
-    function safeTransferFrom(address src, address dst, uint256 nft) public payable {
+    function safeTransferFrom(address src, address dst, uint256 nft) external override payable {
         _safeTransfer(src, dst, nft, "");
     }
 
@@ -127,7 +127,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         }
     }
 
-    function transferFrom(address src, address dst, uint256 nft) public payable mine(nft) {
+    function transferFrom(address src, address dst, uint256 nft) public override payable nod(nft) {
         require(src == _deeds[nft].guy, "ds-deed-src-not-valid");
         require(dst != address(0), "ds-deed-unsafe-destination");
         require(_deeds[nft].guy != address(0), "ds-deed-invalid-nft");
@@ -138,36 +138,36 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function _upop(uint256 nft) internal {
-        uint256[] storage _udds = _usrDeeds[_deeds[nft].guy];
-        uint256   _uidx = _deeds[nft].upos;
-        uint256   _move = _udds[_udds.length - 1];
-        _udds[_uidx] = _move;
-        _deeds[nft].upos = _uidx;
+        uint256[] storage _udds    = _usrDeeds[_deeds[nft].guy];
+        uint256           _uidx    = _deeds[nft].upos;
+        uint256           _move    = _udds[_udds.length - 1];
+        _udds[_uidx]               = _move;
+        _deeds[nft].upos           = _uidx;
         _udds.pop();
         _usrDeeds[_deeds[nft].guy] = _udds;
     }
 
     function _upush(address guy, uint256 nft) internal {
-        _deeds[nft].upos = _usrDeeds[guy].length;
+        _deeds[nft].upos           = _usrDeeds[guy].length;
         _usrDeeds[guy].push(nft);
-        _deeds[nft].guy = guy;
+        _deeds[nft].guy            = guy;
     }
 
-    function approve(address guy, uint256 nft) public payable mine(nft) returns (address) {
+    function approve(address guy, uint256 nft) public override payable nod(nft) returns (address) {
         _deeds[nft].approved = guy;
         emit Approval(msg.sender, guy, nft);
     }
 
-    function setApprovalForAll(address op, bool ok) public {
+    function setApprovalForAll(address op, bool ok) external override {
         _operators[msg.sender][op] = ok;
         emit ApprovalForAll(msg.sender, op, ok);
     }
 
-    function getApproved(uint256 nft) public returns (address) {
+    function getApproved(uint256 nft) external override returns (address) {
         return _deeds[nft].approved;
     }
 
-    function isApprovedForAll(address guy, address op) public view returns (bool) {
+    function isApprovedForAll(address guy, address op) external override view returns (bool) {
         return _operators[guy][op];
     }
 }

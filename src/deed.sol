@@ -1,10 +1,11 @@
 pragma solidity >=0.6.0;
 
 import "ds-stop/stop.sol";
+import "ds-auth/auth.sol";
 
 import "./base.sol";
 
-contract DSDeed is DSDeedBase, DSStop {
+contract DSDeed is DSDeedBase, DSAuth, DSStop {
 
     constructor(string memory name, string memory symbol) DSDeedBase(name, symbol) public {}
 
@@ -13,11 +14,11 @@ contract DSDeed is DSDeedBase, DSStop {
 
     uint256 private _ids;
 
-    function mint(string memory uri) public returns (uint256) {
+    function mint(string memory uri) public auth returns (uint256) {
         return mint(msg.sender, uri);
     }
 
-    function mint(address guy) public returns (uint256) {
+    function mint(address guy) public auth returns (uint256) {
         return mint(guy, "");
     }
 

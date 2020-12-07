@@ -137,20 +137,20 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         emit Transfer(src, dst, nft);
     }
 
+    function _upush(address guy, uint256 nft) internal {
+        _deeds[nft].upos           = _usrDeeds[guy].length;
+        _usrDeeds[guy].push(nft);
+        _deeds[nft].guy            = guy;
+    }
+
     function _upop(uint256 nft) internal {
         uint256[] storage _udds    = _usrDeeds[_deeds[nft].guy];
         uint256           _uidx    = _deeds[nft].upos;
         uint256           _move    = _udds[_udds.length - 1];
         _udds[_uidx]               = _move;
-        _deeds[nft].upos           = _uidx;
+        _deeds[_move].upos           = _uidx;
         _udds.pop();
         _usrDeeds[_deeds[nft].guy] = _udds;
-    }
-
-    function _upush(address guy, uint256 nft) internal {
-        _deeds[nft].upos           = _usrDeeds[guy].length;
-        _usrDeeds[guy].push(nft);
-        _deeds[nft].guy            = guy;
     }
 
     function approve(address guy, uint256 nft) public override payable nod(nft) returns (address) {

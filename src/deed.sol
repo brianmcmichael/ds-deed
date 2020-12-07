@@ -14,29 +14,42 @@ contract DSDeed is DSDeedBase, DSAuth, DSStop {
 
     uint256 private _ids;
 
+    function mint(string memory uri) public returns (uint256) {
+        return mint(msg.sender, uri);
+    }
+
+    function mint(address guy) public returns (uint256) {
+        return mint(guy, "");
+    }
+
     function mint(address guy, string memory uri) public auth stoppable returns (uint256 nft) {
         require(guy != address(0), "ds-deed-invalid-address");
         nft = _ids++;
         _allDeeds.push(nft);
-        _upush(guy, nft);
         _deeds[nft] = Deed(
             _allDeeds[_allDeeds.length - 1],
             _usrDeeds[guy].length - 1,
             guy,
             address(0)
         );
+        _upush(guy, nft);
         _uris[nft] = uri;
         emit Mint(guy, nft);
     }
 
     function burn(uint256 nft) public auth stoppable {
         address guy = _deeds[nft].guy;
-        _upop(nft);
-        uint256 _idx = _deeds[nft].pos;
-        uint256 _mov = _allDeeds[_allDeeds.length - 1];
-        _allDeeds[_idx] = _mov;
-        _deeds[nft].pos = _idx;
-        _allDeeds.pop();
+        require(guy != address(0), "ds-deed-invalid-nft");
+
+        uint256 _idx       = _deeds[nft].pos;
+        uint256 _mov       = _allDeeds[_allDeeds.length - 1];
+        _allDeeds[_idx]    = _mov;
+        _deeds[_mov].pos    = _idx;
+        _allDeeds.pop();    // Remove from All deed array
+        _upop(nft);         // Remove from User deed array
+
+        delete _deeds[nft]; // Remove from deed mapping
+
         emit Burn(guy, nft);
     }
 

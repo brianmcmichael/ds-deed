@@ -119,6 +119,27 @@ contract DSDeedTest is DSTest {
     }
 
     //function tokenByIndex(uint256 idx) external view returns (uint256);
+    function testTokenByIndex() public {
+        deed.mint(_addr, _uri);
+        deed.mint(_addr,  "t1");
+        deed.mint(_addr,  "t2");
+        deed.mint(_addr2, "t3");
+        deed.mint(_addr2, "t4");
+        deed.mint(_addr2, "t5");
+        deed.mint(_addr,  "t6");
+
+        assertEq(deed.tokenByIndex(4), 4);
+        deed.burn(4);
+        assertEq(deed.tokenByIndex(3), 3);
+        assertEq(deed.tokenByIndex(4), 6);
+        deed.burn(3);
+        assertEq(deed.tokenByIndex(3), 5);
+        assertEq(deed.tokenByIndex(4), 6);
+        deed.burn(0);
+        assertEq(deed.tokenByIndex(0), 6);
+        assertEq(deed.tokenByIndex(1), 1);
+    }
+
     //function tokenOfOwnerByIndex(address guy, uint256 idx) external view returns (uint256);
 
     // Test fail when burning a burned nft

@@ -79,6 +79,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function tokenOfOwnerByIndex(address guy, uint256 idx) external override view returns (uint256) {
+        require(idx < balanceOf(guy), "ds-deed-index-out-of-bounds");
         return _usrDeeds[guy][idx];
     }
 
@@ -101,7 +102,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         _interfaces[interfaceID] = true;
     }
 
-    function balanceOf(address guy) external override view returns (uint256) {
+    function balanceOf(address guy) public override view returns (uint256) {
         require(guy != address(0), "ds-deed-invalid-address");
         return _usrDeeds[guy].length;
     }

@@ -73,6 +73,84 @@ contract DSDeedTest is DSTest {
 
     }
 
+    // ERC721
+    /// title ERC-721 Non-Fungible Token Standard
+    /// dev See https://eips.ethereum.org/EIPS/eip-721
+    ///  Note: the ERC-165 identifier for this interface is 0x80ac58cd.
+
+    /// dev This emits when ownership of any NFT changes by any mechanism.
+    ///  This event emits when NFTs are created (`from` == 0) and destroyed
+    ///  (`to` == 0). Exception: during contract creation, any number of NFTs
+    ///  may be created and assigned without emitting Transfer. At the time of
+    ///  any transfer, the approved address for that NFT (if any) is reset to none.
+    //event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
+
+    /// dev This emits when the approved address for an NFT is changed or
+    ///  reaffirmed. The zero address indicates there is no approved address.
+    ///  When a Transfer event emits, this also indicates that the approved
+    ///  address for that NFT (if any) is reset to none.
+    //event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
+
+    /// dev This emits when an operator is enabled or disabled for an owner.
+    ///  The operator can manage all NFTs of the owner.
+    //event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
+
+    /// notice Count all NFTs assigned to an owner
+    /// dev NFTs assigned to the zero address are considered invalid, and this
+    ///  function throws for queries about the zero address.
+    /// param _owner An address for whom to query the balance
+    /// return The number of NFTs owned by `_owner`, possibly zero
+    //function balanceOf(address _owner) external view returns (uint256);
+    function testBalanceOf() public {
+        assertEq(deed.balanceOf(_addr),  0);
+        assertEq(deed.balanceOf(_addr2),  0);
+
+        deed.mint(_addr, _uri);
+        deed.mint(_addr,  "t1");
+        deed.mint(_addr,  "t2");
+        deed.mint(_addr2, "t3");
+        deed.mint(_addr2, "t4");
+        deed.mint(_addr2, "t5");
+        deed.mint(_addr,  "t6");
+
+        assertEq(deed.balanceOf(_addr),  4);
+        assertEq(deed.balanceOf(_addr2), 3);
+
+        deed.burn(4);
+
+        assertEq(deed.balanceOf(_addr),  4);
+        assertEq(deed.balanceOf(_addr2), 2);
+    }
+
+    function testFailBalanceOf() public {
+        deed.balanceOf(address(0));
+    }
+
+    /// notice Find the owner of an NFT
+    /// dev NFTs assigned to zero address are considered invalid, and queries
+    ///  about them do throw.
+    /// param _tokenId The identifier for an NFT
+    /// return The address of the owner of the NFT
+    function testOwnerOf() public {
+        deed.mint(address(this), _uri);
+        deed.mint(address(101), "t1");
+
+        assertEq(deed.ownerOf(0), address(this));
+        assertEq(deed.ownerOf(1), address(101));
+
+        deed.approve(address(this), 0);
+        deed.transferFrom(address(this), address(102), 0);
+
+        assertEq(deed.ownerOf(0), address(102));
+    }
+
+    function testFailOwnerOf() public {
+        deed.mint(address(this), _uri);
+        deed.transferFrom(address(this), address(0), 0); // We can't test revert on check of address(0) because we can't transfer to address(0)
+        deed.ownerOf(0);
+    }
+
+
 
     // ERC721 Metadata
     /// title ERC-721 Non-Fungible Token Standard, optional metadata extension

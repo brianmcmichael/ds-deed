@@ -272,6 +272,17 @@ contract DSDeedTest is DSTest {
     /// param _tokenId The NFT to find the approved address for
     /// return The approved address for this NFT, or the zero address if there is none
     //function getApproved(uint256 _tokenId) external view returns (address);
+    function testGetApproved() public {
+        deed.mint(address(alice), "");
+        alice.doApprove(address(bob), 0);
+
+        assertEq(deed.getApproved(0), address(bob));
+    }
+
+    // Throws if `_tokenId` is not a valid NFT.
+    function testFailGetApproved() public {
+        deed.getApproved(3);
+    }
 
     /// notice Query if an address is an authorized operator for another address
     /// param _owner The address that owns the NFTs

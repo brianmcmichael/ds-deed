@@ -165,6 +165,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function getApproved(uint256 nft) external override returns (address) {
+        require(_deeds[nft].guy != address(0), "ds-deed-invalid-nft");
         return _deeds[nft].approved;
     }
 

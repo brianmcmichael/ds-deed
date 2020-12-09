@@ -354,6 +354,13 @@ contract DSDeedTest is DSTest {
     /// return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     ///  unless throwing
     //function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes _data) external returns(bytes4);
+    function testOnERC721Received() public {
+        deed.mint(address(alice), "");
+
+        bytes32 response = bytes32(deed.onERC721Received(address(alice), address(alice), 0, ""));
+        bytes32 identity = bytes32(bytes4(0x150b7a02));
+        assertEq(response, identity);
+    }
 
 
 

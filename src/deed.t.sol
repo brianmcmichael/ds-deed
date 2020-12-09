@@ -330,6 +330,14 @@ contract DSDeedTest is DSTest {
     /// return `true` if the contract implements `interfaceID` and
     ///  `interfaceID` is not 0xffffffff, `false` otherwise
     //function supportsInterface(bytes4 interfaceID) external view returns (bool);
+    function testSupportsInterface() public {
+        assertTrue(deed.supportsInterface(0x80ac58cd));
+        assertTrue(deed.supportsInterface(0x5b5e139f));
+        assertTrue(deed.supportsInterface(0x780e9d63));
+
+        assertTrue(!deed.supportsInterface(0x01234567));
+        assertTrue(!deed.supportsInterface(0xffffffff));
+    }
 
     /// dev Note: the ERC-165 identifier for this interface is 0x150b7a02.
     //interface ERC721TokenReceiver {

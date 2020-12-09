@@ -4,6 +4,48 @@ import "ds-test/test.sol";
 
 import "./deed.sol";
 
+contract DeedUser {
+
+    DSDeed deed;
+
+    constructor(DSDeed _deed) public {
+        deed = _deed;
+    }
+
+    function doTransferFrom(address from, address to, uint nft)
+        public
+        returns (bool)
+    {
+        deed.transferFrom(from, to, nft);
+    }
+
+    function doBalanceOf(address who) public view returns (uint) {
+        return deed.balanceOf(who);
+    }
+
+    function doApprove(address guy, uint nft)
+        public
+        returns (bool)
+    {
+        deed.approve(guy, nft);
+    }
+
+    function doSetApprovalForAll(address guy, bool ok) public
+    {
+        deed.setApprovalForAll(guy, ok);
+    }
+
+    function doPush(address who, uint nft) public {
+        deed.push(who, nft);
+    }
+    function doPull(address who, uint nft) public {
+        deed.pull(who, nft);
+    }
+    function doMove(address src, address dst, uint nft) public {
+        deed.move(src, dst, nft);
+    }
+}
+
 contract DSDeedTest is DSTest {
     DSDeed deed;
 
@@ -13,8 +55,13 @@ contract DSDeedTest is DSTest {
     address _addr2 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     string  _uri   = "https://etherscan.io/address/0x00000000219ab540356cBB839Cbe05303d7705Fa";
 
+    DeedUser alice;
+    DeedUser bob;
+
     function setUp() public {
-        deed = new DSDeed(_name, _symb);
+        deed  = new DSDeed(_name, _symb);
+        alice = new DeedUser(deed);
+        bob   = new DeedUser(deed);
     }
 
     function testMint() public {
@@ -201,24 +248,23 @@ contract DSDeedTest is DSTest {
     /// param _approved True if the operator is approved, false to revoke approval
     //function setApprovalForAll(address _operator, bool _approved) external;
     function testSetApprovalForAll() public {
-        deed.mint(msg.sender, _uri);
-        deed.mint(msg.sender,  "t1");
-        deed.mint(msg.sender,  "t2");
-        deed.mint(msg.sender,  "t3");
-        deed.mint(msg.sender,  "t4");
+        deed.mint(address(alice), _uri);
+        deed.mint(address(alice),  "t1");
+        deed.mint(address(alice),  "t2");
+        deed.mint(address(alice),  "t3");
+        deed.mint(address(alice),  "t4");
 
-        deed.setApprovalForAll(address(this), true);
+        alice.doSetApprovalForAll(address(bob), true);
 
-        deed.mint(msg.sender,  "t5");
-        deed.mint(msg.sender,  "t6");
+        deed.mint(address(alice),  "t5");
+        deed.mint(address(alice),  "t6");
 
-        assertTrue(deed.isApprovedForAll(msg.sender, address(this)));
+        assertTrue(deed.isApprovedForAll(address(alice), address(bob)));
 
-        deed.push(address(this), 2);
-        //deed.push(_addr, 5);
+        bob.doPull(address(alice), 2);
 
-        deed.setApprovalForAll(address(this), false);
-        assertTrue(!deed.isApprovedForAll(msg.sender, address(this)));
+        alice.doSetApprovalForAll(address(bob), false);
+        assertTrue(!deed.isApprovedForAll(address(alice), address(bob)));
     }
 
     /// notice Get the approved address for a single NFT

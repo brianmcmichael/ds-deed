@@ -200,6 +200,26 @@ contract DSDeedTest is DSTest {
     /// param _operator Address to add to the set of authorized operators
     /// param _approved True if the operator is approved, false to revoke approval
     //function setApprovalForAll(address _operator, bool _approved) external;
+    function testSetApprovalForAll() public {
+        deed.mint(msg.sender, _uri);
+        deed.mint(msg.sender,  "t1");
+        deed.mint(msg.sender,  "t2");
+        deed.mint(msg.sender,  "t3");
+        deed.mint(msg.sender,  "t4");
+
+        deed.setApprovalForAll(address(this), true);
+
+        deed.mint(msg.sender,  "t5");
+        deed.mint(msg.sender,  "t6");
+
+        assertTrue(deed.isApprovedForAll(msg.sender, address(this)));
+
+        deed.push(address(this), 2);
+        //deed.push(_addr, 5);
+
+        deed.setApprovalForAll(address(this), false);
+        assertTrue(!deed.isApprovedForAll(msg.sender, address(this)));
+    }
 
     /// notice Get the approved address for a single NFT
     /// dev Throws if `_tokenId` is not a valid NFT.

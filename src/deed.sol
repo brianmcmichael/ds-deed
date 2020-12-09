@@ -22,6 +22,10 @@ contract DSDeed is DSDeedBase, DSAuth, DSStop {
         transferFrom(src, msg.sender, nft);
     }
 
+    function move(address src, address dst, uint256 nft) external {
+        transferFrom(src, dst, nft);
+    }
+
     function mint(string memory uri) public returns (uint256) {
         return mint(msg.sender, uri);
     }

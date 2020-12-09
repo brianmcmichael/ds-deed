@@ -197,7 +197,6 @@ contract DSDeedTest is DSTest {
         deed.ownerOf(0);
     }
 
-
     /// notice Transfers the ownership of an NFT from one address to another address
     /// dev Throws unless `msg.sender` is the current owner, an authorized
     ///  operator, or the approved address for this NFT. Throws if `_from` is
@@ -212,6 +211,7 @@ contract DSDeedTest is DSTest {
     /// param data Additional data with no specified format, sent in call to `_to`
     //function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes data) external payable;
 
+
     /// notice Transfers the ownership of an NFT from one address to another address
     /// dev This works identically to the other function with an extra data parameter,
     ///  except this function just sets data to "".
@@ -219,6 +219,7 @@ contract DSDeedTest is DSTest {
     /// param _to The new owner
     /// param _tokenId The NFT to transfer
     //function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable;
+
 
     /// notice Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE
     ///  TO CONFIRM THAT `_to` IS CAPABLE OF RECEIVING NFTS OR ELSE
@@ -232,6 +233,7 @@ contract DSDeedTest is DSTest {
     /// param _tokenId The NFT to transfer
     //function transferFrom(address _from, address _to, uint256 _tokenId) external payable;
 
+
     /// notice Change or reaffirm the approved address for an NFT
     /// dev The zero address indicates there is no approved address.
     ///  Throws unless `msg.sender` is the current NFT owner, or an authorized
@@ -239,6 +241,32 @@ contract DSDeedTest is DSTest {
     /// param _approved The new approved NFT controller
     /// param _tokenId The NFT to approve
     //function approve(address _approved, uint256 _tokenId) external payable;
+    function testApprove() public {
+        deed.mint(address(alice), "");
+
+        alice.doApprove(address(bob), 0);
+
+        assertEq(deed.getApproved(0), address(bob));
+
+        bob.doApprove(address(this), 0);
+
+        assertEq(deed.getApproved(0), address(this));
+
+        deed.mint(address(alice), "");
+        alice.doSetApprovalForAll(address(bob), true);
+
+        bob.doApprove(address(1), 1);
+
+        assertEq(deed.getApproved(1), address(1));
+    }
+
+    function testFailApprove() public {
+        //Throws unless `msg.sender` is the current NFT owner, or an authorized
+        ///  operator of the current owner.
+        deed.mint(address(alice), "");
+
+        bob.doApprove(address(this), 0);
+    }
 
     /// notice Enable or disable approval for a third party ("operator") to manage
     ///  all of `msg.sender`'s assets
@@ -274,6 +302,9 @@ contract DSDeedTest is DSTest {
     //function getApproved(uint256 _tokenId) external view returns (address);
     function testGetApproved() public {
         deed.mint(address(alice), "");
+
+        assertEq(deed.getApproved(0), address(0));
+
         alice.doApprove(address(bob), 0);
 
         assertEq(deed.getApproved(0), address(bob));

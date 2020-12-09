@@ -154,7 +154,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         _usrDeeds[_deeds[nft].guy] = _udds;
     }
 
-    function approve(address guy, uint256 nft) public override payable nod(nft) returns (address) {
+    function approve(address guy, uint256 nft) public override payable nod(nft) {
         _deeds[nft].approved = guy;
         emit Approval(msg.sender, guy, nft);
     }

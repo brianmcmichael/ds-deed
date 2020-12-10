@@ -134,7 +134,7 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
         require(_deeds[nft].guy != address(0), "ds-deed-invalid-nft");
         _upop(nft);
         _upush(dst, nft);
-        approve(address(0), nft);
+        _approve(address(0), nft);
         emit Transfer(src, dst, nft);
     }
 
@@ -155,6 +155,10 @@ contract DSDeedBase is ERC721, ERC721Enumerable, ERC721Metadata {
     }
 
     function approve(address guy, uint256 nft) public override payable nod(nft) {
+        _approve(guy, nft);
+    }
+
+    function _approve(address guy, uint256 nft) internal {
         _deeds[nft].approved = guy;
         emit Approval(msg.sender, guy, nft);
     }

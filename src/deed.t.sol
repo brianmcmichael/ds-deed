@@ -46,6 +46,8 @@ contract DeedUser {
     }
 }
 
+contract Dummy {}
+
 contract DSDeedTest is DSTest {
     DSDeed deed;
 
@@ -232,6 +234,52 @@ contract DSDeedTest is DSTest {
     /// param _to The new owner
     /// param _tokenId The NFT to transfer
     //function transferFrom(address _from, address _to, uint256 _tokenId) external payable;
+    function testTransferFrom() public {
+        deed.mint(address(alice), "");
+
+        alice.doTransferFrom(address(alice), address(bob), 0);
+
+        assertEq(deed.ownerOf(0), address(bob));
+    }
+
+    function testTransferFromNoCheck() public {
+        deed.mint(address(alice), "");
+
+        // Useless contract. Tokens can be lost.
+        address dummy = address(new Dummy());
+
+        alice.doTransferFrom(address(alice), dummy, 0);
+
+        // Transfer will succeed without a check.
+        assertEq(deed.ownerOf(0), dummy);
+    }
+
+    function testFailTransferFromNonOwner() public {
+        deed.mint(address(alice), "");
+
+        bob.doTransferFrom(address(alice), address(bob), 0);
+    }
+
+    function testFailTransferFromWrongOwner() public {
+        deed.mint(address(alice), "");
+
+        // Throws if `_from` is not the current owner.
+        alice.doTransferFrom(address(bob), address(alice), 0);
+    }
+
+    function testFailTransferFromToZeroAddress() public {
+        deed.mint(address(alice), "");
+
+        // Throws if `_to` is the zero address.
+        alice.doTransferFrom(address(alice), address(0), 0);
+    }
+
+    function testFailTransferFromInvalidNFT() public {
+        deed.mint(address(alice), "");
+
+        // Throws if `_tokenId` is not a valid NFT.
+        alice.doTransferFrom(address(alice), address(bob), 1);
+    }
 
 
     /// notice Change or reaffirm the approved address for an NFT

@@ -320,6 +320,11 @@ contract DSDeedTest is DSTest {
     /// param _operator The address that acts on behalf of the owner
     /// return True if `_operator` is an approved operator for `_owner`, false otherwise
     //function isApprovedForAll(address _owner, address _operator) external view returns (bool);
+    function testIsApprovedForAll() public {
+        assertTrue(!deed.isApprovedForAll(address(alice), address(bob)));
+        alice.doSetApprovalForAll(address(bob), true);
+        assertTrue(deed.isApprovedForAll(address(alice), address(bob)));
+    }
 
 
     //interface ERC165 {
@@ -361,8 +366,6 @@ contract DSDeedTest is DSTest {
         bytes32 identity = bytes32(bytes4(0x150b7a02));
         assertEq(response, identity);
     }
-
-
 
 
     // ERC721 Metadata

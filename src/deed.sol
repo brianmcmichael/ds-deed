@@ -1,16 +1,24 @@
 pragma solidity >=0.6.0;
 
-import "ds-stop/stop.sol";
 import "ds-auth/auth.sol";
 
 import "./base.sol";
 
-contract DSDeed is DSDeedBase, DSAuth, DSStop {
+contract DSDeed is DSDeedBase, DSAuth {
+
+    bool   public   stopped;
+
+    modifier stoppable {
+        require(!stopped, "ds-stop-is-stopped");
+        _;
+    }
 
     constructor(string memory name, string memory symbol) DSDeedBase(name, symbol) public {}
 
     event Mint(address indexed guy, uint256 nft);
     event Burn(address indexed guy, uint256 nft);
+    event Stop();
+    event Start();
 
     uint256 private _ids;
 
@@ -63,6 +71,16 @@ contract DSDeed is DSDeedBase, DSAuth, DSStop {
         delete _deeds[nft]; // Remove from deed mapping
 
         emit Burn(guy, nft);
+    }
+
+    function stop() public auth {
+        stopped = true;
+        emit Stop();
+    }
+
+    function start() public auth {
+        stopped = false;
+        emit Start();
     }
 
     function setTokenUri(uint256 nft, string memory uri) public auth stoppable {

@@ -1,0 +1,6 @@
+name            ds-deed
+description     ERC721 implementation with minting and burning
+version         0.0.1
+
+author          Brian McMichael <brian@brianmcmichael.com>
+license         Apache-2.0

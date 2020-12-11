@@ -171,7 +171,8 @@ contract DSDeedTest is DSTest {
         assertEq(deed.balanceOf(_addr2), 2);
     }
 
-    function testFailBalanceOf() public {
+    function testFailBalanceOf() public view {
+        // function throws for queries about the zero address.
         deed.balanceOf(address(0));
     }
 

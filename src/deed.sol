@@ -71,18 +71,6 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         _;
     }
 
-    function push(address dst, uint256 nft) external {
-        transferFrom(msg.sender, dst, nft);
-    }
-
-    function pull(address src, uint256 nft) external {
-        transferFrom(src, msg.sender, nft);
-    }
-
-    function move(address src, address dst, uint256 nft) external {
-        transferFrom(src, dst, nft);
-    }
-
     function name() external override view returns (string memory) {
         return _name;
     }
@@ -141,8 +129,20 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         _safeTransfer(src, dst, nft, what);
     }
 
-    function safeTransferFrom(address src, address dst, uint256 nft) external override payable stoppable {
+    function safeTransferFrom(address src, address dst, uint256 nft) public override payable stoppable {
         _safeTransfer(src, dst, nft, "");
+    }
+
+    function push(address dst, uint256 nft) external {
+        safeTransferFrom(msg.sender, dst, nft);
+    }
+
+    function pull(address src, uint256 nft) external {
+        safeTransferFrom(src, msg.sender, nft);
+    }
+
+    function move(address src, address dst, uint256 nft) external {
+        safeTransferFrom(src, dst, nft);
     }
 
     function _safeTransfer(address src, address dst, uint256 nft, bytes memory data) internal {

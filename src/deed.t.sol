@@ -45,6 +45,10 @@ contract DeedUser {
     function doMove(address src, address dst, uint nft) public {
         deed.move(src, dst, nft);
     }
+
+    function onERC721Received(address, address, uint256, bytes calldata) external returns(bytes4) {
+        return this.onERC721Received.selector;
+    }
 }
 
 contract TokenReceiver {

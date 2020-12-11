@@ -96,7 +96,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         return _usrDeeds[guy][idx];
     }
 
-    function onERC721Received(address, address, uint256, bytes calldata) external pure returns(bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external override returns(bytes4) {
         revert("ds-deed-does-not-accept-tokens");
     }
 

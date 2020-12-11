@@ -136,7 +136,7 @@ contract DSDeedTest is DSTest {
         deed.burn(2);
         deed.burn(8);
         deed.burn(1);
-
+        assertEq(deed.totalSupply(), 4);
     }
 
     // ERC721
@@ -600,5 +600,64 @@ contract DSDeedTest is DSTest {
 
         deed.tokenOfOwnerByIndex(_addr, 3); // max 2
     }
-    // Test fail when burning a burned nft
+
+    function testFailBurnBurned() public {
+        deed.mint(_addr, _uri);
+        deed.mint(_addr,  "t1");
+        deed.burn(1);
+        deed.burn(1);
+    }
+
+    function testStop() public {
+        deed.stop();
+        assertTrue(deed.stopped());
+    }
+
+    function testStart() public {
+        deed.stop();
+        deed.start();
+        assertTrue(!deed.stopped());
+    }
+
+    function testFailTransferFromWhenStopped() public {
+        deed.mint(address(alice), "");
+        deed.stop();
+        alice.doTransferFrom(address(alice), address(bob), 0);
+    }
+    function testFailPushWhenStopped() public {
+        deed.mint(address(alice), "");
+        deed.stop();
+        alice.doPush(address(bob), 0);
+    }
+    function testFailPullWhenStopped() public {
+        deed.mint(address(alice), "");
+        alice.doApprove(address(bob), 0);
+        deed.stop();
+        bob.doPull(address(alice), 0);
+    }
+    function testFailMoveWhenStopped() public {
+        deed.mint(address(alice), "");
+        alice.doApprove(address(bob), 0);
+        deed.stop();
+        alice.doMove(address(alice), address(bob), 0);
+    }
+    function testFailMintWhenStopped() public {
+        deed.stop();
+        deed.mint(address(alice), "");
+    }
+    function testFailMintGuyWhenStopped() public {
+        deed.stop();
+        deed.mint("t1");
+    }
+    function testFailBurnWhenStopped() public {
+        deed.mint(address(alice), "");
+        deed.stop();
+        deed.burn(0);
+    }
+    function testFailTrustWhenStopped() public {
+        deed.mint(address(alice), "");
+        deed.stop();
+        alice.doApprove(address(bob), 0);
+    }
+
 }

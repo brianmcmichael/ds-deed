@@ -137,11 +137,11 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         return _deeds[nft].guy;
     }
 
-    function safeTransferFrom(address src, address dst, uint256 nft, bytes calldata what) external override payable {
+    function safeTransferFrom(address src, address dst, uint256 nft, bytes calldata what) external override payable stoppable {
         _safeTransfer(src, dst, nft, what);
     }
 
-    function safeTransferFrom(address src, address dst, uint256 nft) external override payable {
+    function safeTransferFrom(address src, address dst, uint256 nft) external override payable stoppable {
         _safeTransfer(src, dst, nft, "");
     }
 
@@ -153,7 +153,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         }
     }
 
-    function transferFrom(address src, address dst, uint256 nft) public override payable nod(nft) {
+    function transferFrom(address src, address dst, uint256 nft) public override payable stoppable nod(nft) {
         require(src == _deeds[nft].guy, "ds-deed-src-not-valid");
         require(dst != address(0), "ds-deed-unsafe-destination");
         require(_deeds[nft].guy != address(0), "ds-deed-invalid-nft");
@@ -226,7 +226,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         _usrDeeds[_deeds[nft].guy] = _udds;
     }
 
-    function approve(address guy, uint256 nft) public override payable nod(nft) {
+    function approve(address guy, uint256 nft) public override payable stoppable nod(nft) {
         _approve(guy, nft);
     }
 
@@ -235,7 +235,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         emit Approval(msg.sender, guy, nft);
     }
 
-    function setApprovalForAll(address op, bool ok) external override {
+    function setApprovalForAll(address op, bool ok) external override stoppable {
         _operators[msg.sender][op] = ok;
         emit ApprovalForAll(msg.sender, op, ok);
     }

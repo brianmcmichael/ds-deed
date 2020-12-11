@@ -46,7 +46,7 @@ contract DeedUser {
         deed.move(src, dst, nft);
     }
 
-    function onERC721Received(address, address, uint256, bytes calldata) external returns(bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns(bytes4) {
         return this.onERC721Received.selector;
     }
 }
@@ -480,12 +480,9 @@ contract DSDeedTest is DSTest {
     /// return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     ///  unless throwing
     //function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes _data) external returns(bytes4);
-    function testOnERC721Received() public {
+    function testFailOnERC721Received() public {
         deed.mint(address(alice), "");
-
-        bytes32 response = bytes32(deed.onERC721Received(address(alice), address(alice), 0, ""));
-        bytes32 identity = bytes32(bytes4(0x150b7a02));
-        assertEq(response, identity);
+        deed.onERC721Received(address(alice), address(alice), 0, "");
     }
 
 
@@ -670,5 +667,9 @@ contract DSDeedTest is DSTest {
         deed.stop();
         alice.doApprove(address(bob), 0);
     }
+    function testFailSendSelf() public {
+        deed.mint(address(alice), "");
 
+        alice.doPush(address(deed), 0);
+    }
 }

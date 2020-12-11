@@ -96,6 +96,10 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         return _usrDeeds[guy][idx];
     }
 
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns(bytes4) {
+        revert("ds-deed-does-not-accept-tokens");
+    }
+
     function _isContract(address addr) private view returns (bool) {
         bytes32 codehash;
         bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470; // EIP-1052
@@ -151,7 +155,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
 
     function transferFrom(address src, address dst, uint256 nft) public override payable stoppable nod(nft) {
         require(src == _deeds[nft].guy, "ds-deed-src-not-valid");
-        require(dst != address(0), "ds-deed-unsafe-destination");
+        require(dst != address(0)&& dst != address(this), "ds-deed-unsafe-destination");
         require(_deeds[nft].guy != address(0), "ds-deed-invalid-nft");
         _upop(nft);
         _upush(dst, nft);

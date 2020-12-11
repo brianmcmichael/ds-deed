@@ -624,6 +624,13 @@ contract DSDeedTest is DSTest {
         deed.stop();
         alice.doTransferFrom(address(alice), address(bob), 0);
     }
+
+    function testFailSafeTransferFromWhenStopped() public {
+        deed.mint(address(alice), "");
+        deed.stop();
+        alice.doSafeTransferFrom(address(alice), address(bob), 0);
+    }
+
     function testFailPushWhenStopped() public {
         deed.mint(address(alice), "");
         deed.stop();

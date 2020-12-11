@@ -45,8 +45,6 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         address approved;
     }
 
-    event Mint(address indexed guy, uint256 nft);
-    event Burn(address indexed guy, uint256 nft);
     event Stop();
     event Start();
 
@@ -189,7 +187,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         );
         _upush(guy, nft);
         _uris[nft] = uri;
-        emit Mint(guy, nft);
+        emit Transfer(address(0), guy, nft);
     }
 
     function burn(uint256 nft) public auth stoppable {
@@ -209,7 +207,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
 
         delete _deeds[nft]; // Remove from deed mapping
 
-        emit Burn(guy, nft);
+        emit Transfer(guy, address(0), nft);
     }
 
     function _upush(address guy, uint256 nft) internal {

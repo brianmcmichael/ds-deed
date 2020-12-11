@@ -12,26 +12,27 @@ contract DeedUser {
         deed = _deed;
     }
 
-    function doTransferFrom(address from, address to, uint nft)
-        public
-        returns (bool)
-    {
+    function doTransferFrom(address from, address to, uint nft) public {
         deed.transferFrom(from, to, nft);
+    }
+
+    function doSafeTransferFrom(address from, address to, uint nft) public {
+        deed.safeTransferFrom(from, to, nft);
+    }
+
+    function doSafeTransferFrom(address from, address to, uint nft, bytes memory data) public {
+        deed.safeTransferFrom(from, to, nft, data);
     }
 
     function doBalanceOf(address who) public view returns (uint) {
         return deed.balanceOf(who);
     }
 
-    function doApprove(address guy, uint nft)
-        public
-        returns (bool)
-    {
+    function doApprove(address guy, uint nft) public {
         deed.approve(guy, nft);
     }
 
-    function doSetApprovalForAll(address guy, bool ok) public
-    {
+    function doSetApprovalForAll(address guy, bool ok) public {
         deed.setApprovalForAll(guy, ok);
     }
 
@@ -48,14 +49,15 @@ contract DeedUser {
 
 contract TokenReceiver {
 
-    uint256 public tokensReceived = 0;
+    uint256 public tokensReceived;
 
-    function onERC721Received(address, address, uint256, bytes calldata) external {
+    function onERC721Received(address, address, uint256, bytes calldata) external returns (bytes4) {
         tokensReceived++;
+        return this.onERC721Received.selector;
     }
 }
 
-contract BadTokenReceiver {}
+contract BadTokenReceiver { uint256 one = 0; }
 
 
 contract DSDeedTest is DSTest {
@@ -228,6 +230,23 @@ contract DSDeedTest is DSTest {
     /// param _tokenId The NFT to transfer
     /// param data Additional data with no specified format, sent in call to `_to`
     //function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes data) external payable;
+    function testSafeTransferFromWithData() public {
+        deed.mint(address(alice), "");
+
+        // _addr is EOA (can't use address(bob) because that's a contract
+        alice.doSafeTransferFrom(address(alice), _addr, 0, "Some data");
+
+        assertEq(deed.ownerOf(0), _addr);
+    }
+
+    function testSafeTransferFromContractWithData() public {
+        deed.mint(address(alice), "");
+
+        alice.doSafeTransferFrom(address(alice), address(receiver), 0, "Some data");
+
+        assertEq(deed.ownerOf(0), address(receiver));
+        assertEq(receiver.tokensReceived(), 1); // Ensure receiver was called.
+    }
 
 
     /// notice Transfers the ownership of an NFT from one address to another address
@@ -237,6 +256,42 @@ contract DSDeedTest is DSTest {
     /// param _to The new owner
     /// param _tokenId The NFT to transfer
     //function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable;
+    function testSafeTransferFromEOA() public {
+        deed.mint(address(alice), "");
+
+        // _addr is EOA (can't use address(bob) because that's a contract
+        alice.doSafeTransferFrom(address(alice), _addr, 0);
+
+        assertEq(deed.ownerOf(0), _addr);
+    }
+
+    function testSafeTransferFromContract() public {
+        deed.mint(address(alice), "");
+
+        alice.doSafeTransferFrom(address(alice), address(receiver), 0);
+
+        assertEq(deed.ownerOf(0), address(receiver));
+        assertEq(receiver.tokensReceived(), 1); // Ensure receiver was called.
+    }
+
+    function testFailSafeTransferFromBadContract() public {
+        deed.mint(address(alice), "");
+        // it calls
+        ///  `onERC721Received` on `_to` and throws if the return value is not
+        ///  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+        alice.doSafeTransferFrom(address(alice), address(badreceiver), 0);
+    }
+
+    function testFailSafeTransferFromZeroAddr() public {
+        deed.mint(address(alice), "");
+        // Throws if `_to` is the zero address.
+        alice.doSafeTransferFrom(address(alice), address(0), 0);
+    }
+
+    function testFailSafeTransferFromInvalidNFT() public {
+        // Throws if `_tokenId` is not a valid NFT.
+        alice.doSafeTransferFrom(address(alice), address(0), 0);
+    }
 
 
     /// notice Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE

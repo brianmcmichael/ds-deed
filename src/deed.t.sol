@@ -46,7 +46,17 @@ contract DeedUser {
     }
 }
 
-contract Dummy {}
+contract TokenReceiver {
+
+    uint256 public tokensReceived = 0;
+
+    function onERC721Received(address, address, uint256, bytes calldata) external {
+        tokensReceived++;
+    }
+}
+
+contract BadTokenReceiver {}
+
 
 contract DSDeedTest is DSTest {
     DSDeed deed;
@@ -59,11 +69,16 @@ contract DSDeedTest is DSTest {
 
     DeedUser alice;
     DeedUser bob;
+    TokenReceiver receiver;
+    BadTokenReceiver badreceiver;
 
     function setUp() public {
         deed  = new DSDeed(_name, _symb);
         alice = new DeedUser(deed);
         bob   = new DeedUser(deed);
+
+        receiver = new TokenReceiver();
+        badreceiver = new BadTokenReceiver();
     }
 
     function testMint() public {
@@ -247,12 +262,10 @@ contract DSDeedTest is DSTest {
         deed.mint(address(alice), "");
 
         // Useless contract. Tokens can be lost.
-        address dummy = address(new Dummy());
-
-        alice.doTransferFrom(address(alice), dummy, 0);
+        alice.doTransferFrom(address(alice), address(badreceiver), 0);
 
         // Transfer will succeed without a check.
-        assertEq(deed.ownerOf(0), dummy);
+        assertEq(deed.ownerOf(0), address(badreceiver));
     }
 
     function testFailTransferFromNonOwner() public {

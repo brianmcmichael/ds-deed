@@ -125,11 +125,11 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         return _deeds[nft].guy;
     }
 
-    function safeTransferFrom(address src, address dst, uint256 nft, bytes calldata what) external override payable stoppable {
+    function safeTransferFrom(address src, address dst, uint256 nft, bytes calldata what) external override payable {
         _safeTransfer(src, dst, nft, what);
     }
 
-    function safeTransferFrom(address src, address dst, uint256 nft) public override payable stoppable {
+    function safeTransferFrom(address src, address dst, uint256 nft) public override payable {
         _safeTransfer(src, dst, nft, "");
     }
 
@@ -155,7 +155,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
 
     function transferFrom(address src, address dst, uint256 nft) public override payable stoppable nod(nft) {
         require(src == _deeds[nft].guy, "ds-deed-src-not-valid");
-        require(dst != address(0)&& dst != address(this), "ds-deed-unsafe-destination");
+        require(dst != address(0) && dst != address(this), "ds-deed-unsafe-destination");
         require(_deeds[nft].guy != address(0), "ds-deed-invalid-nft");
         _upop(nft);
         _upush(dst, nft);
@@ -198,9 +198,9 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         address guy = _deeds[nft].guy;
         require(guy != address(0), "ds-deed-invalid-nft");
 
-        uint256 _idx       = _deeds[nft].pos;
-        uint256 _mov       = _allDeeds[_allDeeds.length - 1];
-        _allDeeds[_idx]    = _mov;
+        uint256 _idx        = _deeds[nft].pos;
+        uint256 _mov        = _allDeeds[_allDeeds.length - 1];
+        _allDeeds[_idx]     = _mov;
         _deeds[_mov].pos    = _idx;
         _allDeeds.pop();    // Remove from All deed array
         _upop(nft);         // Remove from User deed array
@@ -221,7 +221,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         uint256           _uidx    = _deeds[nft].upos;
         uint256           _move    = _udds[_udds.length - 1];
         _udds[_uidx]               = _move;
-        _deeds[_move].upos           = _uidx;
+        _deeds[_move].upos         = _uidx;
         _udds.pop();
         _usrDeeds[_deeds[nft].guy] = _udds;
     }

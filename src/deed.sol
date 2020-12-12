@@ -1,4 +1,6 @@
-/// base.sol -- basic ERC721 implementation
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/// deed.sol -- basic ERC721 implementation
 
 // Copyright (C) 2020  Brian McMichael
 

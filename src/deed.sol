@@ -20,11 +20,11 @@
 pragma solidity >=0.6.0;
 
 import "erc721/erc721.sol";
-import "ds-auth/auth.sol";
 
-contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
+contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata {
 
     bool                             public   stopped;
+    mapping (address => uint)        public   wards;
 
     uint256                          private  _ids;
 
@@ -49,6 +49,8 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
 
     event Stop();
     event Start();
+    event Rely(address indexed guy);
+    event Deny(address indexed guy);
 
     constructor(string memory name, string memory symbol) public {
         _name = name;
@@ -56,6 +58,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
         _addInterface(0x80ac58cd); // ERC721
         _addInterface(0x5b5e139f); // ERC721Metadata
         _addInterface(0x780e9d63); // ERC721Enumerable
+        wards[msg.sender] = 1;
     }
 
     modifier nod(uint256 nft) {
@@ -66,6 +69,21 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata, DSAuth {
             "ds-deed-insufficient-approval"
         );
         _;
+    }
+
+    modifier auth {
+        require(wards[msg.sender] == 1, "ds-deed-not-authorized");
+        _;
+    }
+
+    function rely(address guy) external auth {
+        wards[guy] = 1;
+        emit Rely(guy);
+    }
+
+    function deny(address guy) external auth {
+        wards[guy] = 0;
+        emit Deny(guy);
     }
 
     modifier stoppable {

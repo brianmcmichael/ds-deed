@@ -236,7 +236,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata {
         _usrDeeds[_deeds[nft].guy] = _udds;
     }
 
-    function approve(address guy, uint256 nft) public override payable stoppable nod(nft) {
+    function approve(address guy, uint256 nft) external override payable stoppable nod(nft) {
         _approve(guy, nft);
     }
 
@@ -259,12 +259,12 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata {
         return _operators[guy][op];
     }
 
-    function stop() public auth {
+    function stop() external auth {
         stopped = true;
         emit Stop();
     }
 
-    function start() public auth {
+    function start() external auth {
         stopped = false;
         emit Start();
     }

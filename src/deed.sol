@@ -71,23 +71,13 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata {
         _;
     }
 
-    modifier auth {
-        require(wards[msg.sender] == 1, "ds-deed-not-authorized");
+    modifier stoppable {
+        require(!stopped, "ds-deed-is-stopped");
         _;
     }
 
-    function rely(address guy) external auth {
-        wards[guy] = 1;
-        emit Rely(guy);
-    }
-
-    function deny(address guy) external auth {
-        wards[guy] = 0;
-        emit Deny(guy);
-    }
-
-    modifier stoppable {
-        require(!stopped, "ds-deed-is-stopped");
+    modifier auth {
+        require(wards[msg.sender] == 1, "ds-deed-not-authorized");
         _;
     }
 
@@ -214,7 +204,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata {
         _burn(nft);
     }
 
-    function _burn(uint256 nft) public auth stoppable {
+    function _burn(uint256 nft) internal {
         address guy = _deeds[nft].guy;
         require(guy != address(0), "ds-deed-invalid-nft");
 
@@ -277,6 +267,16 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata {
     function start() public auth {
         stopped = false;
         emit Start();
+    }
+
+    function rely(address guy) external auth {
+        wards[guy] = 1;
+        emit Rely(guy);
+    }
+
+    function deny(address guy) external auth {
+        wards[guy] = 0;
+        emit Deny(guy);
     }
 
     function setTokenUri(uint256 nft, string memory uri) public auth stoppable {

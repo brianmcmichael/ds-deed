@@ -191,7 +191,7 @@ contract DSDeed is ERC721, ERC721Enumerable, ERC721Metadata {
         _allDeeds.push(nft);
         _deeds[nft] = Deed(
             _allDeeds[_allDeeds.length - 1],
-            _usrDeeds[guy].length - 1,
+            _usrDeeds[guy].length == 0 ? 0 : _usrDeeds[guy].length - 1,
             guy,
             address(0)
         );
